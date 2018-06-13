@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="icon" href="http://getbootstrap.com/favicon.ico">
+        <title>{{ article.title }}</title>
+
+        <link href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" media="all" />
+        <link href="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}" rel="stylesheet" type="text/css" media="all" />
+        <link href="{% static 'css/zer0Blog.css' %}" rel="stylesheet">
+        <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+        <script src="{% static 'js/deco-common.js' %}"  type="text/javascript"></script>
+	    <script src="{% static 'js/plugins/jquery.scrollLoading.js' %}"  type="text/javascript"></script>
+        <script src="{% static 'js/jquery.min.js' %}"></script>
+
+        <style>
+        .body{
+            margin-left: 30px;
+        }
+        .be_hidden {
+            display: none;
+        }
+    .content_t{
+        margin-left:20px;
+        }
+
+
+/* 弹窗 (background) */
+.modal {
+    display: none; /* 默认隐藏 */
+    position: fixed; /* 固定定位 */
+    z-index: 1; /* 设置在顶层 */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+}
+
+/* 弹窗内容 */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+/* 关闭按钮 */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+    </style>
+
+        <script src="{% static 'bbs/jquery-emojiarea/jquery.emojiarea.js' %}" type="text/javascript"></script>
+
+
+        <script type="text/javascript">
+            $(function () {
+
+                $('#comment_content').emojiarea({
+                    wysiwyg: false,
+                    button: '.emoji-button',
+                });
+
+            })
+        </script>
+
+    </head>
+
+
+        <!-- 导航栏 -->
+<body>
+    <header>
+		<div  class="header2 header">
+            <div class="top">
+                <div class="wp">
+					<!--登录后跳转-->
+						{% if request.user.is_authenticated %}
+                    <div class="personal">
+                            <dl class="user fr">
+                                <dd>{{ user.username }}<img class="down fr" src="{% static 'images/top_down.png' %}"/></dd>
+                                <dt><img width="50" height="50" src="/media/{{ request.user.image }}"/></dt>
+                            </dl>
+                            <div class="userdetail">
+                            	<dl>
+	                                <dt><img width="80" height="80" src="/media/{{ request.user.image }}"/></dt>
+	                                <dd>
+	                                    <h2>{{ request.user.nick_name }}</h2>
+	                                    <p>{{ request.user.username }}</p>
+	                                </dd>
+                                </dl>
+                                <div class="btn">
+	                                <a class="personcenter fl" href="{% url 'users:user_info' %}">进入个人中心</a>
+	                                <a class="fr" href="{% url 'logout' %}">退出</a>
+                                </div>
+                            </div>
+                    </div>
+                    {% else %}
+                        <a style="color:white" class="fr registerbtn" href="{% url 'register' %}">注册</a>
+                        <a style="color:white" class="fr loginbtn" href="{% url 'login' %}">登录</a>
+                    {% endif %}
+                        <div class="head fl">
+                            <h1>
+                                <span style="font-family: fandomFont;font-size:45px;color:#FA58F4;">饭圈:</span><span style="font-family: fandomFont;font-size:60px;color:#FA58F4;">{{ fandom.q_name}}</span>
+                            </h1>
+                        </div>
+                    <div style="margin-left:500px;">
+
+            <div class="gz_btn fr collectionbtn3  notlogin" >
+                {% if has_fav %}已收藏{% else %}收藏帖子{% endif %}
+		    </div>
+
+                    </div>
+                </div>
+
+			    </div>
+    </header>
+
+        <ol class="breadcrumb" style="margin-top:10px;">
+                <li><a href="/">首页</a></li>
+			    <li><a href="/fandom/list/">圈子</a></li>
+			    <li ><a href="/fandom/fandom_article/{{fandom.id}}/">{{article.q_name}}</a></li>
+                <li class="active">帖子详情</li>
+        </ol>
+
+    <div class="row">
+        <div id="container-blog" class="col-md-8 col-lg-9">
+            <!-- 左栏内容 -->
+            <div class="well" id="post">
+                <div>
+                    <img class="" src="/media/{{ article.head_img }}">
+                </div>
+                <div>
+                    <h3>{{ article.title }}</h3>
+                </div>
+
+                <div class="post-info">
+                <span>
+                    <span class="glyphicon glyphicon-calendar"></span>
+                    {{ article.add_time|date:"Y-m-d" }}
+                </span>
+                <span>
+                    <span class="glyphicon glyphicon-comment"></span>
+{# articlecomment表有外键rticle，所以可以反向获取总评论数 #}
+                    {{ article.articlecomment_set.count}}
+                </span>
+                <span>
+                    <span class="glyphicon glyphicon-eye-open"></span>
+                    {{ article.click_nums }}
+                </span>
+                <span>
+                    <span class="glyphicon glyphicon-user"></span>
+                    {{ article.user }}
+                </span>
+                </div>
+                <hr>
+                <div class="wrap" id="article_content_view" style="background-color: transparent">
+
+                        {% autoescape off %}
+                            {{ article.content }}
+                        {% endautoescape %}
+                </div>
+            </div>
+            <div class="well blog-comment">
+                <div class="blog-comment-edit clearfix">
+                    <form action="/users/new/comment/{{article.id}}/" enctype="multipart/form-data" id="po-comment-form" method="post" role="form">
+                        {% csrf_token %}
+                        <div class="comment-text">
+                            <textarea class="comment_content" maxlength="200" placeholder="写下你的评论，限200字!" name="comment" id="comment_content"></textarea>
+                            <div>
+                                <input type="submit" name="commit" value="发 表" class="btn btn-info" data-disable-with="提交中...">
+                                <div class="emoji-div"><a href="javascript:void(0)" class="emoji-button"><img class="emoji" width="20" height="20" src="{% static 'bbs/jquery-emojiarea/packs/basic/emojis/blush.png' %}"></a></div>
+                                <span class="warning" style="display: none"><i class="glyphicon glyphicon-info-sign"></i><span class="warning-text"></span></span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="comment-div" >
+
+                                <h1>所有评论</h1>
+
+                                <div class="comment-tree">{{ html|safe }}</div>
+                            <div id="myModal" class="modal">
+                                <div class="modal-content">
+                                    <span class="close">&times;</span>
+                                    <form  enctype="multipart/form-data" id="reply-form" method="post" role="form">
+                                        {% csrf_token %}
+                                        <textarea name="new_reply" class="form-control" rows="3" maxlength="80" placeholder="限200字!"></textarea>
+                                        <div>
+                                            <input type="submit" name="commit" value="回复评论" class="btn btn-info" data-disable-with="提交中...">
+                                        </div>
+									</form>
+                                </div>
+                            </div>
+            </div>
+            </div>
+
+
+
+<script>
+    $(function () {
+        $('.comment3333').click(function () {
+            if ($(this).next().hasClass('be_hidden')){
+                $(this).next().removeClass('be_hidden')
+            }else{
+                $(this).next().addClass('be_hidden')
+            }
+        })
+    })
+</script>
+<script src="{% static 'bbs/js/post-detail.js' %}" type="text/javascript"></script>
+
+<script type="text/javascript">
+//收藏按钮
+function add_fav(current_elem, fav_id, fav_type){
+    $.ajax({
+        cache: false,
+        type: "POST",
+        url:"{% url 'fandom:add_fav' %}",
+        data:{'fav_id':fav_id, 'fav_type':fav_type},
+        async: true,
+        beforeSend:function(xhr, settings){
+            xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+        },
+        success: function(data) {
+            if(data.status == 'fail'){
+                if(data.msg == '用户未登录'){
+                    window.location.href="/login";
+                }else{
+                    alert(data.msg)
+                }
+            }else if(data.status == 'cancelSuccess'){
+                alert('取消收藏成功')
+            }
+            else if(data.status == 'success'){
+                alert('收藏成功')
+            }
+        },
+    });
+}
+
+$('.collectionbtn3').on('click', function(){
+    add_fav($(this), {{ article.id }}, 3);
+});
+</script>
+
+        </div>
+
+
+    </body>
+</html>
+

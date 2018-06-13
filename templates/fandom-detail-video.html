@@ -1,0 +1,69 @@
+{% extends 'fandom_base.html' %}
+{% block title %}粉丝圈列表页{% endblock %}
+{% block page_path %}粉丝圈{% endblock %}
+{% load staticfiles %}
+{% block right_form %}
+<div class="right companycenter layout" >
+		<div class="head">
+			<h1>圈子视频</h1>
+            <div class="morph-button morph-button-modal morph-button-modal-3 morph-button-fixed">
+                <button type="button" class=" glyphicon glyphicon-facetime-video">上传视频</button>
+		        <div class="morph-content">
+					<div class="content-style-form content-style-form-2">
+									<span class="glyphicon glyphicon-remove icon-close"></span>
+									<h2 >上传视频</h2>
+									<form action="/users/new/video/{{fandom.id}}/" enctype="multipart/form-data" id="po-video-form" method="post" role="form">
+                                        {% csrf_token %}
+                                        <input name="name" type="text" class="form-control" placeholder="视频标题">
+                                        <input name="desc" type="text" class="form-control" placeholder="视频描述...">
+                                        <input name="url" type="file"  >请选择视频
+                                        <input type="submit" name="commit-article" value="发 表" class="btn btn-info" data-disable-with="提交中...">
+
+									</form>
+								</div>
+				</div>
+	        </div><!-- morph-button -->
+		</div>
+        <div class="brief group_list">
+          {% for video in fandom_all_video %}
+              <div class="module1_5 box">
+                  <a class="comp-img-box">
+                      <video width="214" height="195" controls>
+                          <source src="/media/{{ video.url }}"  type="video/mp4">
+                          您的浏览器不支持 HTML5 video 标签。
+                      </video>
+                  </a>
+                    <div class="des">
+                        <a href="video-detail.html"><h2>{{ video.name }}</h2></a>
+                        <span class="fl">fav_nums：<i class="key">{{ video.fav_nums }}</i></span>
+                        <span class="fr">{{ video.add_time }}</span>
+                    </div>
+                </div>
+
+            {% endfor %}
+
+		</div>
+    <div class="pageturn">
+            <ul class="pagelist">
+                   {% if all_video.has_previous %}
+                  <li class="long"><a href="?{{ all_video.previous_page_number.querystring }}" >上一页</a></li>
+                  {% endif %}
+                   {% for page in all_video.pages %}
+                    {% if page %}
+                        {% ifequal page all_video.number %}
+                            <li class="active"><a href="?{{ page.querystring }}">{{ page }}</a></li>
+                        {% else %}
+                             <li><a href="?{{ page.querystring }}" class="page">{{ page }}</a></li>
+                        {% endifequal %}
+                    {% else %}
+                        <li class="none"><a href="">...</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if all_video.has_next %}
+                       <li class="long"><a href="?{{ all_video.next_page_number.querystring }}">下一页</a></li>
+                {% endif %}
+            </ul>
+            </div>
+	</div>
+{% endblock %}
+

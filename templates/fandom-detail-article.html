@@ -1,0 +1,145 @@
+{% extends 'fandom_base.html' %}
+{% block title %}粉丝圈帖子列表页{% endblock %}
+{% block page_path %}{{fandom.q_name}}{% endblock %}
+{% load staticfiles %}
+{% block right_form %}
+<script>
+			(function() {
+				var docElem = window.document.documentElement, didScroll, scrollPosition;
+
+				// trick to prevent scrolling when opening/closing button
+				function noScrollFn() {
+					window.scrollTo( scrollPosition ? scrollPosition.x : 0, scrollPosition ? scrollPosition.y : 0 );
+				}
+
+				function noScroll() {
+					window.removeEventListener( 'scroll', scrollHandler );
+					window.addEventListener( 'scroll', noScrollFn );
+				}
+
+				function scrollFn() {
+					window.addEventListener( 'scroll', scrollHandler );
+				}
+
+				function canScroll() {
+					window.removeEventListener( 'scroll', noScrollFn );
+					scrollFn();
+				}
+
+				function scrollHandler() {
+					if( !didScroll ) {
+						didScroll = true;
+						setTimeout( function() { scrollPage(); }, 60 );
+					}
+				};
+
+				function scrollPage() {
+					scrollPosition = { x : window.pageXOffset || docElem.scrollLeft, y : window.pageYOffset || docElem.scrollTop };
+					didScroll = false;
+				};
+
+				scrollFn();
+
+				[].slice.call( document.querySelectorAll( '.morph-button' ) ).forEach( function( bttn ) {
+					new UIMorphingButton( bttn, {
+						closeEl : '.icon-close',
+						onBeforeOpen : function() {
+							// don't allow to scroll
+							noScroll();
+						},
+						onAfterOpen : function() {
+							// can scroll again
+							canScroll();
+						},
+						onBeforeClose : function() {
+							// don't allow to scroll
+							noScroll();
+						},
+						onAfterClose : function() {
+							// can scroll again
+							canScroll();
+						}
+					} );
+				} );
+
+				// for demo purposes only
+				[].slice.call( document.querySelectorAll( 'form button' ) ).forEach( function( bttn ) {
+					bttn.addEventListener( 'click', function( ev ) { ev.preventDefault(); } );
+				} );
+			})();
+		</script>
+<div class="right companycenter layout" >
+		<div class="head">
+			<h1>圈子帖子</h1>
+            <div class="morph-button morph-button-modal morph-button-modal-3 morph-button-fixed">
+                <button type="button" class=" glyphicon glyphicon-pencil">发帖</button>
+		        <div class="morph-content">
+                    <div class="content-style-form content-style-form-2">
+									<span class="glyphicon glyphicon-remove icon-close"></span>
+									<h2 >上传</h2>
+									<form action="/users/new/article/{{fandom.id}}/" enctype="multipart/form-data" id="po-article-form" method="post" role="form">
+                                        {% csrf_token %}
+                                        <input name="title" type="text" class="form-control" placeholder="文章标题">
+                                        <input name="summary" type="text" class="form-control" placeholder="一句话文章中心思想...">
+                                        <input name="head_img" type="file"  >必选标题图片
+                                        <textarea name="content" class="form-control" rows="3" maxlength="200" placeholder="限200字!"></textarea>
+                                        <input type="submit" name="commit-article" value="发 表" class="btn btn-info" data-disable-with="提交中...">
+
+									</form>
+								</div>
+				</div>
+			</div>
+	    </div><!-- morph-button -->
+	</div>
+
+
+        <div class="messagelist">
+                  {% for article in all_article.object_list %}
+                    <div class="messages butler_list company company-fav-box">
+                        <dl class="des fr">
+                            <dt>
+                                <a>
+                                    <img width="160" height="90" src="/media/{{ article.head_img }}"/>
+                                </a>
+                            </dt>
+                            <dd>
+                                <h1><a href="{% url 'fandom:article_detail' article.id  %}">{{ article.title }}</a></h1>
+                                <span class="c8 clear">{{ article.add_time }}</span>
+                            </dd>
+                        </dl>
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+		<div class="pageturn">
+            <ul class="pagelist">
+{# 判断是否有前一页逻辑 #}
+                   {% if all_article.has_previous %}
+                  <li class="long"><a href="?{{ all_article.previous_page_number.querystring }}" >上一页</a></li>
+                  {% endif %}
+{# 中间页码 #}
+                   {% for page in all_article.pages %}
+                    {% if page %}
+                        {% ifequal page all_article.number %}
+                            <li class="active"><a href="?{{ page.querystring }}">{{ page }}</a></li>
+                        {% else %}
+                             <li><a href="?{{ page.querystring }}" class="page">{{ page }}</a></li>
+                        {% endifequal %}
+                    {% else %}
+                        <li class="none"><a href="">...</a></li>
+                    {% endif %}
+                {% endfor %}
+{# 判断是否有后一页逻辑 #}
+                {% if all_article.has_next %}
+                       <li class="long"><a href="?{{ all_article.next_page_number.querystring }}">下一页</a></li>
+                {% endif %}
+            </ul>
+            </div>
+	</div>
+
+
+
+{% endblock %}

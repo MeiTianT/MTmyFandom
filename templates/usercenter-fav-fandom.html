@@ -1,0 +1,61 @@
+{% extends 'usercenter-base.html' %}
+{% block title %}我的收藏- 饭友圈在线网{% endblock %}
+{% load staticfiles %}
+{% block custom_bread %}
+<section>
+        <div class="wp">
+            <ul  class="crumbs">
+                <li><a href="{% url 'index' %}">首页</a>></li>
+                <li>我的圈子</li>
+            </ul>
+        </div>
+    </section>
+{% endblock %}
+
+{% block left_content %}
+	<div class="left">
+        <ul>
+            <li ><a href="{% url 'users:user_info' %}">个人资料</a></li>
+            <li class="active2"><a href="{% url 'users:myfav_fandom' %}">我的圈子</a></li>
+            <li ><a href="{% url 'users:myfav_video' %}">我的收藏</a></li>
+            <li ><a href="{% url 'users:mypo_video' %}">我的发表</a></li>
+        </ul>
+	</div>
+{% endblock %}
+
+{% block right_content %}
+    <div class="right" >
+            <div class="personal_des Releasecont">
+                <div class="head">
+                    <h1>我关注的圈子</h1>
+                </div>
+            </div>
+            <div class="personal_des permessage">
+
+                <div class="companycenter">
+
+                    <div class="group_list brief">
+                         {% for fav_fandom in fandom_list %}
+                        <div class="module1_5 box">
+                            <a href="{% url 'fandom:fandom_home' fav_fandom.id %}">
+                                <img width="214" height="190" src="/media/{{ fav_fandom.image }}"/>
+                            </a>
+                            <div class="des">
+                                <a href="{% url 'fandom:fandom_home' fav_fandom.id %}"><h2>{{ fav_fandom.name }}</h2></a>
+                                <span class="fl">所属明星：<i class="key">{{ fav_fandom.star }}</i></span>
+                                <span class="fr">点赞：{{ fav_fandom.fav_num }}</span>
+                            </div>
+                            <div class="bottom">
+                                <span class="fl">{{ fav_fandom.add_time }}</span>
+                                <span class="delete-group fr jsDeleteFav_fandom" data-favid="{{ fav_fandom.id }}"></span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+

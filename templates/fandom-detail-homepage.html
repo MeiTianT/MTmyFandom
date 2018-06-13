@@ -1,0 +1,57 @@
+{% extends 'fandom_base.html' %}
+{% block title %}粉丝圈首页{% endblock %}
+{% block page_path %}{{fandom.q_name}}{% endblock %}
+{% load staticfiles %}
+{% block right_form %}
+
+<div class="right companycenter layout grouping" >
+		<div class="head">
+			<h1>{{fandom.q_name}}</h1>
+			<div class="gz_btn fr notlogin" onclick="add_fav(this,{{ fandom.id }},4)" >
+                {% if has_fav %}已关注{% else %}关注{% endif %}
+		    </div>
+		</div>
+		<div class="brief group_list">
+
+		</div>
+
+	<script type="text/javascript">
+    //关注按钮
+function add_fav(current_elem, fav_id, fav_type){
+    $.ajax({
+        cache: false,
+        type: "POST",
+        url:"{% url 'fandom:add_fav' %}",
+        data:{'fav_id':fav_id, 'fav_type':fav_type},
+        async: true,
+        beforeSend:function(xhr, settings){
+            xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+        },
+        success: function(data) {
+            if(data.status == 'fail'){
+                if(data.msg == '用户未登录'){
+                    window.location.href="/login";
+                }else{
+                    alert(data.msg)
+                }
+
+            }else if(data.status == 'cancelSuccess'){
+                //current_elem.text(data.msg)
+                alert('取消关注成功')
+
+
+            }
+            else if(data.status == 'success'){
+                //current_elem.text(data.msg)
+                alert('关注成功');
+            }
+        },
+    });
+}
+
+$('.collectionbtn2').on('click', function(){
+    alert({{ picture.id }})
+    //add_fav($(this), {{ fandom.id }}, 4);
+});
+</script>
+{% endblock %}

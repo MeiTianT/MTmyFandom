@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% block title %}粉丝圈列表页—饭友圈在线网{% endblock %}
+{% load staticfiles %}
+{% block custom_bread %}
+<section>
+	<div class="wp">
+		<div class="crumbs">
+			<ul>
+				<li><a href="{% url 'index' %}">首页</a>></li>
+                <li><a href="{% url 'fandom:fandom_list' %}">粉丝圈子</a>></li>
+				<li>圈子详情</li>
+			</ul>
+		</div>
+	</div>
+</section>
+{% endblock %}
+{% block content %}
+    <section>
+	<div class="wp">
+		<div class="groupPurchase_detail detail">
+			<div class="toppro">
+				<div class="left">
+					<div class="picbox">
+						<div class="tb-booth tb-pic">
+							<img width="440" height="445" src="/media/{{ fandom.image }}" class="jqzoom" />
+						</div>
+
+					</div>
+					<div class="des">
+						<h1 title="django 从入门到精通体验开始了">{{ fandom.q_name }}</h1>
+						<span class="key">{{ fandom.desc }}</span>
+						<div class="prize">
+							<span class="fl">所属明星：<i class="key">{{ fandom.star }}</i></span>
+							<span class="fr">关注人数：{{ fandom.fav_nums }}</span>
+						</div>
+						<ul class="parameter">
+                            <li><span class="pram word3">圈子标签：</span><span title="">{{ fandom.quan_tag }}</span></li>
+
+						</ul>
+						<div class="btns">
+							<div class="btn colectgroupbtn"  id="jsLeftBtn">
+                                 {% if has_fav_fandom %}已关注{% else %}关注{% endif %}
+                            </div>
+						</div>
+					</div>
+                    <div class="group-share-box">
+                        <div class="bdsharebuttonbox"
+                             data-text="django开始了"
+                             data-desc="我在#慕课网#发现了"
+                             data-comment=""
+                             data-url="/group/groupdetail/15/">
+                            <span class="fl">分享到：</span>
+                            <a href="#" class="bds_more" data-cmd="more"></a>
+                            <a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a>
+                            <a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a>
+                            <a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a>
+                            <a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a>
+                            <a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a>
+                        </div>
+                    </div>
+				</div>
+				<div class="right">
+					<div class="head">
+						<h1>授课机构</h1>
+						<p>世界名校，课程权威</p>
+					</div>
+					<div class="pic">
+                        <a href="/company/14/">
+                            <img width="150" height="80" src="/media/{{ fandom.image }}"/>
+                        </a>
+                    </div>
+					<a href="/company/14/">
+                        <h2 class="center" title="清华大学">{{ user_fandom.q_name }}</h2>
+                    </a>
+					<div class="btn  notlogin
+					     "data-favid="14" id="jsRightBtn">
+                         {% if has_fav_fandom %}已收藏{% else %}收藏{% endif %}
+                    </div>
+					<div class="clear">
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+    <section>
+	<div class="wp">
+		<div class="list groupPurchase_detail_pro">
+			<div class="left layout">
+				<div class="head">
+					<ul class="tab_header">
+						<li class="active">圈子详情</li>
+					</ul>
+				</div>
+				<div class="tab_cont tab_cont1">
+                    {% autoescape off %}
+                        {{ fandom.desc }}
+                    {% endautoescape %}
+
+				</div>
+				<div class="tab_cont tab_cont2" >
+					<div class="comment">
+						<div class="comenlist">
+
+	                    </div>
+					</div>
+				</div>
+			</div>
+			<div class="right layout">
+				<div class="head">相关圈子推荐</div>
+                <div class="group_recommend">
+                      {% for relate_fandom in relate_fandom %}
+                           <dl>
+                            <dt>
+                                <a target="_blank" href="">
+                                    <img width="240" height="220" class="scrollLoading" src="/media/{{ relate_fandom.image }}"/>
+                                </a>
+                            </dt>
+                            <dd>
+                                <a target="_blank" href=""><h2> {{ relate_fandom.q_name }}</h2></a>
+                            </dd>
+                        </dl>
+                       {% endfor %}
+                </div>
+			</div>
+		</div>
+	</div>
+</section>
+
+{% endblock %}
+{% block custom_js %}
+<script type="text/javascript">
+//收藏分享
+function add_fav(current_elem, fav_id, fav_type){
+    $.ajax({
+        cache: false,
+        type: "POST",
+        url:"{% url 'fandom:add_fav' %}",
+        data:{'fav_id':fav_id, 'fav_type':4},
+        async: true,
+        beforeSend:function(xhr, settings){
+            xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+        },
+        success: function(data) {
+            if(data.status == 'fail'){
+                if(data.msg == '用户未登录'){
+                    window.location.href="/login";
+                }else{
+                    alert(data.msg)
+                }
+
+            }else if(data.status == 'success'){
+                current_elem.text(data.msg)
+            }
+        },
+    });
+}
+
+$('.collectionbtn').on('click', function(){
+    add_fav($(this), {{ fandom.id }}, 4);
+});
+
+
+</script>
+
+
+
+
+
+{% endblock %}

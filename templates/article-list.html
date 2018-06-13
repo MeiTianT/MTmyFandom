@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block title %}帖子列表—饭友圈在线网{% endblock %}
+{% load staticfiles %}
+{% block custom_bread %}
+
+<div class="wp">
+            <ul  class="crumbs">
+                <li><a href="{% url 'index' %}">首页</a>></li>
+                <li>帖子</li>
+            </ul>
+        </div>
+{% endblock %}
+{% block content %}
+<section>
+	<div class="wp butler_list_box list">
+	<div class='left'>
+		<div class="butler_list company list">
+		<div class="layout">
+			<div class="head">
+				<ul class="tab_header">
+					<li class="{% if sort == '' %}active{% endif %}"><a href="?sort=all">全部</a> </li>
+					<li class="{% if sort == 'new' %}active{% endif %}"><a href="?sort=new">最新</a></li>
+                    <li class="{% if sort == 'hot' %}active{% endif %}"><a href="?sort=hot">最热</a></li>
+
+
+				</ul>
+			</div>
+             {% for article in all_article.object_list %}
+                 <dl class="des difdes">
+                    <dt>
+                        <a href="{% url 'fandom:article_detail' article.id %}">
+                            <img width="200" height="120" class="scrollLoading" src="/media/{{ article.head_img }}"/>
+                        </a>
+                    </dt>
+                    <dd>
+                        <div class="clearfix">
+                             <a href="{% url 'fandom:article_detail' article.id %}">
+                                 <h1>{{ article.title }}</h1>
+                                 <div class="pic fl">
+
+                                         <img src="{{ article.image }}"/>
+
+
+
+                                 </div>
+                             </a>
+                        </div>
+                        <ul class="cont">
+                            <li class="first"><p class="pic9" style="padding-right:15px;">评论数：<span>{{ article.articlecomment_set.count}}</span></p><p class="c7">作者：<span>{{ article.user }}</span></p></li>
+                            <li class="c8" style="padding-left:18px;">{{ article.q_name }}</li>
+                            <li style="padding-left:18px;">发布时间:{{ article.add_time|date:"Y-m-d H:i:s" }}<p >热度:{{ article.click_nums}}</p></li>
+
+                        </ul>
+                    </dd>
+                    <div class="buy start_groupbuy jsShowPerfect2" data-id="22" ><a href="{% url 'fandom:article_detail' article.id %}"><br/>点击<br/>查看</a></div>
+                </dl>
+             {% endfor %}
+
+		</div>
+		 <div class="pageturn">
+            <ul class="pagelist">
+{# 判断是否有前一页逻辑 #}
+                   {% if all_article.has_previous %}
+                  <li class="long"><a href="?{{ all_article.previous_page_number.querystring }}" >上一页</a></li>
+                  {% endif %}
+{# 中间页码 #}
+                   {% for page in all_article.pages %}
+                    {% if page %}
+                        {% ifequal page all_article.number %}
+                            <li class="active"><a href="?{{ page.querystring }}">{{ page }}</a></li>
+                        {% else %}
+                             <li><a href="?{{ page.querystring }}" class="page">{{ page }}</a></li>
+                        {% endifequal %}
+                    {% else %}
+                        <li class="none"><a href="">...</a></li>
+                    {% endif %}
+                {% endfor %}
+{# 判断是否有后一页逻辑 #}
+                {% if all_article.has_next %}
+                       <li class="long"><a href="?{{ all_article.next_page_number.querystring }}">下一页</a></li>
+                {% endif %}
+            </ul>
+        </div>
+		</div>
+	</div>
+
+
+		<div class="right companyrank layout">
+			<div class="head">热议</div>
+
+                 {% for article in hot_article %}
+                     <dl class="des">
+                    <dt class="num fl">{{ forloop.counter }}</dt>
+                    <dd>
+                        <a href="{% url 'fandom:article_detail' article.id %}"><h1>{{ article.title }}</h1></a>
+                        <p>{{ article.user}}</p>
+                    </dd>
+                </dl>
+                 {% endfor %}
+
+
+
+
+
+		</div>
+        </div>
+</section>
+{% endblock %}
+{% block custom_js %}
+
+
+
+
+{% endblock %}

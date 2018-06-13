@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block title %}视频列表页—饭友圈在线网{% endblock %}
+{% load staticfiles %}
+{% block custom_bread %}
+<section>
+        <div class="wp">
+            <ul  class="crumbs">
+                <li><a href="{% url 'index' %}">首页</a>></li>
+                <li>视频</li>
+            </ul>
+        </div>
+    </section>
+{% endblock %}
+{% block content %}
+  <section>
+	<div class="wp">
+		<div class="list" style="margin-top:0;">
+			<div class="left layout">
+				<div class="head">
+					<ul class="tab_header">
+						<li class="{% if sort == '' %}active{% endif %}"><a href="?sort=">最新 </a></li>
+						<li class="{% if sort == 'hot' %}active{% endif %}"><a href="?sort=hot">最热</a></li>
+					</ul>
+				</div>
+                <div id="inWindow">
+
+                    <div class="tab_cont" id="content">
+					<div class="group_list">
+                         {% for video in all_video.object_list %}
+                        <div class="box">
+                            <a>
+                                <video width="280" height="190" controls>
+                                    <source src="/media/{{ video.url }}"  type="video/mp4">
+                                    您的浏览器不支持 HTML5 video 标签。
+                                </video>
+                            </a>
+                            <div class="des">
+                                <a><h2>{{ video.q_name }}</h2></a>
+                                <span class="fl">所属粉丝圈：<i class="key"><a href="">{{ video.q_name }}</a></i></span>
+                                <span class="fr">点击数：{{ video.click_nums }}</span>
+                            </div>
+                            <div class="bottom">
+                                <a href="picture-detail.html"><span class="fl">{{ video.add_time }}</span></a>
+                                <span class=" star fr  notlogin  " onclick="add_fav(this,{{ video.id }},1)">
+                                        {{ video.fav_nums }}
+                                </span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                   <div class="pageturn">
+            <ul class="pagelist">
+                   {% if all_video.has_previous %}
+                  <li class="long"><a href="?{{ all_video.previous_page_number.querystring }}" >上一页</a></li>
+                  {% endif %}
+                   {% for page in all_video.pages %}
+                    {% if page %}
+                        {% ifequal page all_video.number %}
+                            <li class="active"><a href="?{{ page.querystring }}">{{ page }}</a></li>
+                        {% else %}
+                             <li><a href="?{{ page.querystring }}" class="page">{{ page }}</a></li>
+                        {% endifequal %}
+                    {% else %}
+                        <li class="none"><a href="">...</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if all_video.has_next %}
+                       <li class="long"><a href="?{{ all_video.next_page_number.querystring }}">下一页</a></li>
+                {% endif %}
+            </ul>
+        </div>
+				</div>
+                </div>
+			</div>
+			<div class="right layout">
+				<div class="head">热门视频推荐</div>
+				<div class="group_recommend">
+                   {% for hot_video in hot_video %}
+                       <dl>
+						<dt>
+                            <a target="_blank">
+                                <video width="240" height="220" controls>
+                                    <source src="/media/{{ hot_video.url }}"  type="video/mp4">
+                                    您的浏览器不支持 HTML5 video 标签。
+                                </video>
+                            </a>
+						</dt>
+						<dd>
+							<a target="_blank" href=""><h2> {{ hot_video.fav_nums }}</h2></a>
+							<span class="fl">所属粉丝圈：<i class="key">{{ hot_video.q_name }}</i></span>
+						</dd>
+					</dl>
+                    {% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<script type="text/javascript">
+    //收藏按钮
+function add_fav(current_elem, fav_id, fav_type){
+    $.ajax({
+        cache: false,
+        type: "POST",
+        url:"{% url 'fandom:add_fav' %}",
+        data:{'fav_id':fav_id, 'fav_type':fav_type},
+        async: true,
+        beforeSend:function(xhr, settings){
+            xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+        },
+        success: function(data) {
+            if(data.status == 'fail'){
+                if(data.msg == '用户未登录'){
+                    window.location.href="/login";
+                }else{
+                    alert(data.msg)
+                }
+
+            }else if(data.status == 'cancelSuccess'){
+                //current_elem.text(data.msg)
+                alert('取消收藏成功')
+
+
+            }
+            else if(data.status == 'success'){
+                //current_elem.text(data.msg)
+                alert('收藏成功');
+            }
+        },
+    });
+}
+
+$('.collectionbtn2').on('click', function(){
+    alert({{ picture.id }})
+    //add_fav($(this), {{ picture.id }}, 2);
+});
+</script>
+
+{% endblock %}
+
+

@@ -1,0 +1,9 @@
+#coding=utf-8
+from __future__ import unicode_literals
+
+from django.apps import AppConfig
+
+
+class CoursesConfig(AppConfig):
+    name = 'fandom'
+    verbose_name = u"圈子管理"

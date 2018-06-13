@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}活动列表—饭友圈在线网{% endblock %}
+{% load staticfiles %}
+{% block custom_bread %}
+<div class="wp">
+            <ul  class="crumbs">
+                <li><a href="{% url 'index' %}">首页</a>></li>
+                <li>活动</li>
+            </ul>
+        </div>
+{% endblock %}
+{% block content %}
+<section>
+	<div class="wp butler_list_box list">
+	<div class='left'>
+		<div class="butler_list company list">
+		<div class="layout">
+			<div class="head">
+				<ul class="tab_header">
+					<li class="{% if sort == '' %}active{% endif %}"><a href="?ct={{ category  }}&city={{ city_id }}">全部</a> </li>
+					<li class="{% if sort == 'new' %}active{% endif %}"><a href="?sort=new">最新</a></li>
+                    <li class="{% if sort == 'hot' %}active{% endif %}"><a href="?sort=hot">最热</a></li>
+
+
+				</ul>
+			</div>
+             {% for activity in all_activity.object_list %}
+                 <dl class="des difdes">
+                    <dt>
+                        <a href="{% url 'fandom:activity_detail' activity.id %}">
+                            <img width="200" height="120" class="scrollLoading" src="/media/{{ activity.image }}"/>
+                        </a>
+                    </dt>
+                    <dd>
+                        <div class="clearfix">
+                             <a href="activity-detail-homepage.html">
+                                 <h1>{{ activity.q_name }}</h1>
+                                 <div class="pic fl">
+
+                                         <img src="{{ activity.url }}"/>
+
+
+                                 </div>
+                             </a>
+                        </div>
+                        <ul class="cont">
+                            <li class="first"><p class="pic9">点赞数：<span>{{ activity.fav_nums }}</span></p><p class="c7">活动地点：<span>{{ activity.a_addr }}</span></p></li>
+                            <li class="c8" style="padding-left:18px;">{{ activity.q_name }}</li>
+                        </ul>
+                    </dd>
+                    <div class="buy start_groupbuy jsShowPerfect2" data-id="22"><br/>点击<br/>查看</div>
+                </dl>
+             {% endfor %}
+
+		</div>
+		 <div class="pageturn">
+            <ul class="pagelist">
+                   {% if all_activity.has_previous %}
+                  <li class="long"><a href="?{{ all_activity.previous_page_number.querystring }}" >上一页</a></li>
+                  {% endif %}
+                   {% for page in all_activity.pages %}
+                    {% if page %}
+                        {% ifequal page all_activity.number %}
+                            <li class="active"><a href="?{{ page.querystring }}">{{ page }}</a></li>
+                        {% else %}
+                             <li><a href="?{{ page.querystring }}" class="page">{{ page }}</a></li>
+                        {% endifequal %}
+                    {% else %}
+                        <li class="none"><a href="">...</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if all_activity.has_next %}
+                       <li class="long"><a href="?{{ all_activity.next_page_number.querystring }}">下一页</a></li>
+                {% endif %}
+            </ul>
+        </div>
+		</div>
+	</div>
+
+
+		<div class="right companyrank layout">
+			<div class="head">最热活动</div>
+
+                 {% for activity in hot_activity %}
+                     <dl class="des">
+                    <dt class="num fl">{{ forloop.counter }}</dt>
+                    <dd>
+                        <a href="{% url 'fandom:activity_detail' activity.id %}"><h1>{{ activity.name }}</h1></a>
+                        <p>时间：{{ activity.a_time}}</p>
+                        <p>地点：{{ activity.a_addr}}</p>
+                    </dd>
+                </dl>
+                 {% endfor %}
+
+
+
+
+
+		</div>
+        </div>
+</section>
+{% endblock %}
+{% block custom_js %}
+
+
+
+
+{% endblock %}

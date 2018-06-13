@@ -1,0 +1,97 @@
+{% extends 'fandom_base.html' %}
+{% block title %}粉丝圈列表页{% endblock %}
+{% block page_path %}粉丝圈{% endblock %}
+{% load staticfiles %}
+{% block totop %}{% endblock %}
+{% block right_form %}
+<div class="right companycenter layout" >
+    <div class="head">
+        <h1>圈子图片</h1>
+
+         <div class="resetpwdbox dialogbox" id="jsResetDialog">
+        <h1>修改密码</h1>
+        <div class="close jsCloseDialog"><img src="{% static 'images/dig_close.png' %}"/></div>
+        <div class="cont">
+            <form id="jsResetPwdForm" autocomplete="off">
+                <div class="box">
+                    <span class="word2" >新&nbsp;&nbsp;密&nbsp;&nbsp;码</span>
+                    <input type="password" id="pwd" name="password1" placeholder="6-20位非中文字符"/>
+                </div>
+                <div class="box">
+                    <span class="word2" >确定密码</span>
+                    <input type="password" id="repwd" name="password2" placeholder="6-20位非中文字符"/>
+                </div>
+                <div class="error btns" id="jsResetPwdTips"></div>
+                <div class="button">
+                    <input id="jsResetPwdBtn" type="button" value="提交" />
+                </div>
+                <input type='hidden' name='csrfmiddlewaretoken' value='DaP7IUKm9FA9nELA9YUlYYWpyIDdCiIP' />
+            <input type='hidden' name='csrfmiddlewaretoken' value='799Y6iPeEDNSGvrTu3noBrO4MBLv6enY' />
+                {% csrf_token %}
+            </form>
+        </div>
+    </div>
+
+        <div class="morph-button morph-button-modal morph-button-modal-3 morph-button-fixed">
+            <button type="button" class="glyphicon glyphicon-camera"><a href="{% url 'users:new_picture' fandom.id %}?next={{ request.path }}" >上传图片</a></button>
+            <div class="morph-content">
+                <div class="content-style-form content-style-form-2">
+									<span class="glyphicon glyphicon-remove icon-close"></span>
+									<h2 >上传图片</h2>
+									<form action="/users/new/picture/{{fandom.id}}/" enctype="multipart/form-data" id="po-picture-form" method="post" role="form">
+                                        {% csrf_token %}
+                                        <input name="name" type="text" class="form-control" placeholder="图片标题">
+                                        <input name="url" type="file"  >请选择图片
+                                        <input type="submit" name="commit-article" value="发 表" class="btn btn-info" data-disable-with="提交中...">
+                                        <input type="hidden" name="next_page" value="{{ next_page }}">{# 用于给POST函数获取来时页面字段 #}
+									</form>
+								</div>
+            </div>
+
+
+        </div>
+    </div>
+
+
+
+
+	<div class="brief group_list">
+          {% for picture in all_picture.object_list %}
+              <div class="module1_5 box">
+                    <a class="comp-img-box">
+                        <img width="214" height="195" src="/media/{{ picture.url }}"/>
+                    </a>
+                    <div class="des">
+                        <a><h2>{{ picture.name }}</h2></a>
+                        <span class="fl">点击数：<i class="key">{{ picture.click_nums }}</i></span>
+                        <span class="fr">{{ picture.add_time }}</span>
+                    </div>
+                </div>
+
+            {% endfor %}
+
+		</div>
+    <div class="pageturn">
+            <ul class="pagelist">
+                   {% if all_picture.has_previous %}
+                  <li class="long"><a href="?{{ all_picture.previous_page_number.querystring }}" >上一页</a></li>
+                  {% endif %}
+                   {% for page in all_picture.pages %}
+                    {% if page %}
+                        {% ifequal page all_picture.number %}
+                            <li class="active"><a href="?{{ page.querystring }}">{{ page }}</a></li>
+                        {% else %}
+                             <li><a href="?{{ page.querystring }}" class="page">{{ page }}</a></li>
+                        {% endifequal %}
+                    {% else %}
+                        <li class="none"><a href="">...</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if all_picture.has_next %}
+                       <li class="long"><a href="?{{ all_picture.next_page_number.querystring }}">下一页</a></li>
+                {% endif %}
+            </ul>
+            </div>
+</div>
+
+{% endblock %}

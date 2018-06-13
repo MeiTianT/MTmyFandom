@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+{% load staticfiles %}
+<head>
+	<meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" >
+	<title>{% block title %}饭友圈在线网{% endblock %}</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/reset.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/animate.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+
+     {% block custom_css %}{% endblock %}
+
+    <script src="{% static 'js/jquery.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/deco-common.js' %}" type='text/javascript'></script>
+    <script src="{% static 'js/plugins/jquery.scrollLoading.js' %}"  type="text/javascript"></script>
+    <script src="{% static 'js/unslider.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/plugins/layer/layer.js' %}"></script>
+
+
+    {% block custom_js %}{% endblock %}
+
+</head>
+<body>
+    <header>
+		<div  class=" header">
+ 			<div class="top">
+
+				<div class="top_login">
+					<!--登录后跳转-->
+                      {% if request.user.is_authenticated %}
+                        <div class="personal">
+                            <dl class="user fr">
+                                <dd>{{ user.username  }}<img class="down fr" src="{% static 'images/top_down.png' %}"/></dd>
+                                <dt><img width="50" height="50" src="/media/{{ request.user.image }}"/></dt>
+                            </dl>
+                            <div class="userdetail">
+                            	<dl>
+	                                <dt><img width="80" height="80" src="/media/{{ request.user.image }}"/></dt>
+	                                <dd>
+	                                    <h2>{{ request.user.nick_name }}</h2>
+	                                    <p>{{ request.user.username }}</p>
+	                                </dd>
+                                </dl>
+                                <div class="btn">
+	                                <a class="personcenter fl" href="{% url 'users:user_info' %}">进入个人中心</a>
+	                                <a class="fr" href="{% url 'logout' %}?next={{ request.path }}">退出</a>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% else %}
+                        <a style="color:white" class="fr registerbtn" href="{% url 'register' %}?next={{ request.path }}">注册</a>
+                        <a style="color:white" class="fr loginbtn" href="{% url 'login' %}?next={{ request.path }}">登录</a>
+                    {% endif %}
+				</div>
+                <div class="icon fl">
+                    <a href="{% url 'index' %}">
+                        <span class="fontc1">饭</span>
+                        <span class="fontc2">友</span>
+                        <span class="fontc3">圈</span>
+                    </a>
+                </div>
+
+                <div class="nav fl">
+					<div class="wp">
+						<ul>
+							<li {% if request.path == '/' %}class="active"{% endif %}>
+                                <a href="{% url 'index' %}" class="hvr-sweep-to-bottom color1"><i class="glyphicon glyphicon-home"></i>首页</a>
+                            </li>
+                            {# 通过request.path的判断，实现导航提示提示，其他页面复用此模板，#}
+                            {# 利用request.path|slice:‘数字’进行路径判断 #}
+
+							<li {% if request.path|slice:'12' == '/fandom/list' %}class="active"{% endif %}>
+								<a href="{% url 'fandom:fandom_list' %}" class="hvr-sweep-to-bottom color2"><i class="glyphicon glyphicon-home">
+									圈子
+								</a>
+							</li>
+
+                            <li  {% if request.path|slice:'15' == '/fandom/article' %}class="active"{% endif %}>
+								<a href="{% url 'fandom:article_list' %}" class="hvr-sweep-to-bottom color3"><i class="glyphicon glyphicon-home">帖子</a>
+							</li>
+
+                            <li  {% if request.path|slice:'13' == '/fandom/video' %}class="active"{% endif %}>
+								<a href="{% url 'fandom:video_list' %}" class="hvr-sweep-to-bottom color4"><i class="glyphicon glyphicon-home">视频</a>
+							</li>
+
+                            <li  {% if request.path|slice:'15' == '/fandom/picture' %}class="active"{% endif %}>
+								<a href="{% url 'fandom:picture_list' %}" class="hvr-sweep-to-bottom color5"><i class="glyphicon glyphicon-home">图片</a>
+							</li>
+                            <li  {% if request.path|slice:'16' == '/fandom/activity' %}class="active"{% endif %}>
+								<a href="{% url 'fandom:activity_list' %}" class="hvr-sweep-to-bottom color6"><i class="glyphicon glyphicon-home">活动</a>
+							</li>
+
+						</ul>
+					</div>
+				</div>
+                <div class="searchbox fl">
+                        <div class="selectContainer fl">
+                            <span class="selectOption" id="jsSelectOption" data-value="fandom">
+                                圈子
+                            </span>
+                            <ul class="selectMenu" id="jsSelectMenu">
+                                <li data-value="fandom">圈子</li>
+                                <li data-value="article">帖子</li>
+                                <li data-value="video">视频</li>
+                                <li data-value="picture">图片</li>
+                            </ul>
+                        </div>
+                        <input id="search_keywords" class="fl" type="text" value="" placeholder="请输入搜索内容"/>
+                        <img class="search_btn fr" id="jsSearchBtn" src="{% static 'images/search_btn.png' %}"/>
+                    </div>
+
+			</div>
+
+
+			</div>
+    </header>
+<!--crumbs start-->
+{% block custom_bread %}
+    <section>
+        <div class="wp">
+            <ul  class="crumbs">
+                <li><a href="{% url 'index' %}">首页</a>></li>
+
+            </ul>
+        </div>
+    </section>
+{% endblock %}
+
+{% block content %}
+{% endblock %}
+
+<footer>
+		<div class="footer">
+			<div class="wp">
+				<ul class="cont">
+					<span style="font-size:50px;">141542211</span></li>
+				</ul>
+			</div>
+			<p class="line"></p>
+			<div class="wp clear">
+                <span class="fl" style="font-size:20px">饭友圈-在线粉丝交流平台 保留所有权利</span>
+			</div>
+		</div>
+	</footer>
+
+<section>
+    <ul class="sidebar">
+        <li class="qq">
+            <a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=2023525077&site=qq&menu=yes"></a>
+        </li>
+        <li class="totop"></li>
+    </ul>
+</section>
+	<script type="text/javascript">
+    //关注按钮
+function add_fav(current_elem, fav_id, fav_type){
+    $.ajax({
+        cache: false,
+        type: "POST",
+        url:"{% url 'fandom:add_fav' %}",
+        data:{'fav_id':fav_id, 'fav_type':fav_type},
+        async: true,
+        beforeSend:function(xhr, settings){
+            xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+        },
+        success: function(data) {
+            if(data.status == 'fail'){
+                if(data.msg == '用户未登录'){
+                    window.location.href="/login";
+                }else{
+                    alert(data.msg)
+                }
+
+            }else if(data.status == 'success'){
+                current_elem.text(data.msg)
+            }
+        },
+    });
+}
+
+$('.collectionbtn').on('click', function(){
+    add_fav($(this), {{ fandom.id }}, 4);
+});
+</script>
+
+
+</body>
+</html>

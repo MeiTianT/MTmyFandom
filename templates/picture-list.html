@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block title %}图片列表页—饭友圈在线网{% endblock %}
+{% load staticfiles %}
+{% block custom_bread %}
+<section>
+        <div class="wp">
+            <ul  class="crumbs">
+                <li><a href="{% url 'index' %}">首页</a>></li>
+                <li>图片</li>
+            </ul>
+        </div>
+    </section>
+{% endblock %}
+{% block content %}
+  <section>
+	<div class="wp">
+		<div class="list" style="margin-top:0;">
+			<div class="left layout">
+				<div class="head">
+					<ul class="tab_header">
+						<li class="{% if sort == '' %}active{% endif %}"><a href="?sort=all">全部</a> </li>
+					<li class="{% if sort == 'new' %}active{% endif %}"><a href="?sort=new">最新</a></li>
+
+                        <li class="{% if sort == 'hot' %}active{% endif %}"><a href="?sort=hot">最热</a></li>
+					</ul>
+				</div>
+                <div id="inWindow">
+                    <div class="tab_cont " id="content">
+					<div class="group_list">
+                         {% for picture in all_picture.object_list %}
+                            <div class="box">
+                                <a href="{% url 'fandom:picture_detail' picture.id %}">
+                                    <img width="280" height="350" class="scrollLoading" src="/media/{{ picture.url }}"/>
+                                </a>
+                                <div class="des">
+                                    <a href="{% url 'fandom:picture_detail' picture.id %}">
+                                        <h2>{{ picture.q_name }}</h2>
+                                    </a>
+                                    <span class="fl">所属粉丝圈：<i class="key">{{ picture.q_name }}</i></span>
+                                    <span class="fr">点击数：{{ picture.click_nums }}</span>
+                                </div>
+                                <div class="bottom">
+                                    <a href="picture-detail.html"><span class="fl">{{ picture.add_time }}</span></a>
+                                    <span class=" star fr  notlogin  " onclick="add_fav(this,{{ picture.id }},2)" >
+                                        {{ picture.fav_nums }}
+                                    </span>
+
+                                </div>
+                            </div>
+                          {% endfor %}
+					</div>
+                   <div class="pageturn">
+            <ul class="pagelist">
+                   {% if all_picture.has_previous %}
+                  <li class="long"><a href="?{{ all_picture.previous_page_number.querystring }}" >上一页</a></li>
+                  {% endif %}
+                   {% for page in all_picture.pages %}
+                    {% if page %}
+                        {% ifequal page all_picture.number %}
+                            <li class="active"><a href="?{{ page.querystring }}">{{ page }}</a></li>
+                        {% else %}
+                             <li><a href="?{{ page.querystring }}" class="page">{{ page }}</a></li>
+                        {% endifequal %}
+                    {% else %}
+                        <li class="none"><a href="">...</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if all_picture.has_next %}
+                       <li class="long"><a href="?{{ all_picture.next_page_number.querystring }}">下一页</a></li>
+                {% endif %}
+            </ul>
+        </div>
+				</div>
+                </div>
+			</div>
+			<div class="right layout">
+				<div class="head">热门图片推荐</div>
+				<div class="group_recommend">
+                   {% for hot_picture in hot_picture %}
+                       <dl>
+						<dt>
+							<a target="_blank" href="">
+								<img width="240" height="220" class="scrollLoading" src="/media/{{ hot_picture.url }}"/>
+							</a>
+						</dt>
+						<dd>
+							<a target="_blank" href=""><h2> {{ hot_picture.q_name }}</h2></a>
+							<span class="fl">点赞人数：<i class="key">{{ hot_picture.fav_nums }}</i></span>
+						</dd>
+					</dl>
+                    {% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<script type="text/javascript">
+    //收藏按钮
+function add_fav(current_elem, fav_id, fav_type){
+    $.ajax({
+        cache: false,
+        type: "POST",
+        url:"{% url 'fandom:add_fav' %}",
+        data:{'fav_id':fav_id, 'fav_type':fav_type},
+        async: true,
+        beforeSend:function(xhr, settings){
+            xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+        },
+        success: function(data) {
+            if(data.status == 'fail'){
+                if(data.msg == '用户未登录'){
+                    window.location.href="/login";
+                }else{
+                    alert(data.msg)
+                }
+
+            }else if(data.status == 'cancelSuccess'){
+                //current_elem.text(data.msg)
+                alert('取消收藏成功')
+
+
+            }
+            else if(data.status == 'success'){
+                //current_elem.text(data.msg)
+                alert('收藏成功');
+            }
+        },
+    });
+}
+
+$('.collectionbtn2').on('click', function(){
+    alert({{ picture.id }})
+    //add_fav($(this), {{ picture.id }}, 2);
+});
+</script>
+
+{% endblock %}
+
+
